@@ -10,4 +10,4 @@ Pillow==11.0.0
 
 # Supporting Libraries (auto-installed with Django)
 sqlparse==0.4.4
-asgiref==3.7.1
+asgiref==3.7.1gunicorn==21.2.0

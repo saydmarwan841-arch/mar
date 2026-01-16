@@ -92,7 +92,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'quiz' / 'static',
-]
+] if (BASE_DIR / 'quiz' / 'static').exists() else []
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -100,3 +100,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # RTL Support
 USE_I18N = True
 LANGUAGE_CODE = 'ar'
+
+# Vercel Production Settings
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
