@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}كويز الحب - الكويز{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <!-- Progress Section -->
+    <div class="progress-section">
+        <div class="progress-info">
+            <span class="question-counter">السؤال {{ question_number }} من {{ total_questions }}</span>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" style="width: {{ progress }}%"></div>
+            </div>
+            <span class="progress-percentage">{{ progress|floatformat:0 }}%</span>
+        </div>
+    </div>
+
+    <!-- Question Card -->
+    <div class="glass-card question-card">
+        <div class="question-header">
+            <h2 class="question-text">{{ question.text }}</h2>
+        </div>
+
+        <!-- Form -->
+        <form method="POST" class="answer-form">
+            {% csrf_token %}
+            <input type="hidden" name="question_id" value="{{ question.id }}">
+
+            <!-- Options Container -->
+            <div class="options-container">
+                {% for option in options %}
+                <label class="option-label">
+                    <input type="radio" name="answer" value="{{ option.value }}" class="option-input" required>
+                    <div class="option-box">
+                        <span class="option-letter">{{ option.label }}</span>
+                        <span class="option-text">{{ option.text }}</span>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="button-container">
+                <button type="submit" class="btn btn-next">
+                    {% if question_number == total_questions %}
+                    إنهاء الكويز
+                    {% else %}
+                    السؤال التالي
+                    {% endif %}
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Decorative elements -->
+    <div class="quiz-decoration decoration-left"></div>
+    <div class="quiz-decoration decoration-right"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-focus on first radio button for better UX
+    document.addEventListener('DOMContentLoaded', function () {
+        const firstRadio = document.querySelector('input[type="radio"]');
+        if (firstRadio) {
+            firstRadio.focus();
+        }
+    });
+
+    // Smooth transition effect
+    document.querySelector('form').addEventListener('submit', function () {
+        document.querySelector('.question-card').style.opacity = '0.5';
+    });
+</script>
+{% endblock %}

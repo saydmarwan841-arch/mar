@@ -1,0 +1,13 @@
+# Quiz Application Requirements
+# ==============================
+# Core Dependencies
+
+# Django Framework - Web application framework
+Django==4.2.7
+
+# Pillow - Image processing library
+Pillow==11.0.0
+
+# Supporting Libraries (auto-installed with Django)
+sqlparse==0.4.4
+asgiref==3.7.1

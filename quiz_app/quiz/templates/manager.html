@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}إدارة الأسئلة - كويز الحب{% endblock %}
+
+{% block content %}
+<div class="manager-wrapper">
+    <!-- Header Section -->
+    <div class="manager-header">
+        <div class="header-content">
+            <div class="header-icon">✨</div>
+            <h1 class="manager-main-title">صفحة الإدارة</h1>
+            <p class="header-subtitle">أضيفي أسئلتك المفضلة وإدارتها بكل سهولة 💕</p>
+        </div>
+        <div class="header-decoration">
+            <span class="deco-emoji deco-1">💝</span>
+            <span class="deco-emoji deco-2">✨</span>
+            <span class="deco-emoji deco-3">🎀</span>
+        </div>
+    </div>
+
+    <div class="manager-container">
+        <!-- Add Question Card -->
+        <div class="glass-card manager-card form-card">
+            <div class="card-header">
+                <h2 class="manager-title">➕ إضافة سؤال جديد</h2>
+                <div class="title-underline"></div>
+            </div>
+
+            <div class="manager-content">
+                <!-- Add Question Form -->
+                <div class="add-question-section">
+                    <form method="POST" class="manager-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add">
+
+                        <!-- Question Type Selection -->
+                        <div class="form-group type-selector-group">
+                            <label for="question_type">🎯 نوع السؤال:</label>
+                            <div class="type-selector-wrapper">
+                                <select id="question_type" name="question_type" class="form-control type-control"
+                                    onchange="updateFormFields()">
+                                    <option value="MCQ">📌 اختيار من متعدد (4 خيارات)</option>
+                                    <option value="TF">🔲 صحيح/خطأ</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Question Text -->
+                        <div class="form-group">
+                            <label for="question_text">📖 نص السؤال:</label>
+                            <textarea id="question_text" name="question_text" class="form-control" rows="3" required
+                                placeholder="اكتبي السؤال الرائع هنا..."></textarea>
+                        </div>
+
+                        <!-- MCQ Options -->
+                        <div id="mcq-options" class="options-section mcq-section">
+                            <div class="options-header">
+                                <h3>🎨 الخيارات (4 خيارات إجبارية)</h3>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="option_a"><span class="option-badge">أ</span> الخيار الأول:</label>
+                                <input type="text" id="option_a" name="option_a" class="form-control option-control"
+                                    placeholder="الخيار الأول...">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="option_b"><span class="option-badge">ب</span> الخيار الثاني:</label>
+                                <input type="text" id="option_b" name="option_b" class="form-control option-control"
+                                    placeholder="الخيار الثاني...">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="option_c"><span class="option-badge">ج</span> الخيار الثالث:</label>
+                                <input type="text" id="option_c" name="option_c" class="form-control option-control"
+                                    placeholder="الخيار الثالث...">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="option_d"><span class="option-badge">د</span> الخيار الرابع:</label>
+                                <input type="text" id="option_d" name="option_d" class="form-control option-control"
+                                    placeholder="الخيار الرابع...">
+                            </div>
+
+                            <div class="form-group correct-answer-group">
+                                <label for="correct_answer_mcq">✅ الإجابة الصحيحة:</label>
+                                <div class="correct-selector">
+                                    <select id="correct_answer_mcq" name="correct_answer" class="form-control">
+                                        <option value="A">✔️ أ</option>
+                                        <option value="B">✔️ ب</option>
+                                        <option value="C">✔️ ج</option>
+                                        <option value="D">✔️ د</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TF Options (Hidden by default) -->
+                        <div id="tf-options" class="options-section tf-section" style="display: none;">
+                            <div class="options-header">
+                                <h3>🎯 اختاري الإجابة الصحيحة</h3>
+                            </div>
+
+                            <div class="form-group correct-answer-group">
+                                <label for="correct_answer_tf">✅ الإجابة الصحيحة:</label>
+                                <div class="tf-selector">
+                                    <select id="correct_answer_tf" name="correct_answer" class="form-control">
+                                        <option value="True">✓ صحيح</option>
+                                        <option value="False">✗ خطأ</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-add btn-primary">➕ إضافة السؤال</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions List Card -->
+        <div class="glass-card manager-card questions-card">
+            <div class="card-header">
+                <h2 class="manager-title">📋 الأسئلة الحالية <span class="question-count">{{ total_questions }}</span>
+                </h2>
+                <div class="title-underline"></div>
+            </div>
+
+            {% if questions %}
+            <div class="questions-grid">
+                {% for question in questions %}
+                <div class="question-item">
+                    <div class="question-header">
+                        <span class="question-number">💫 السؤال #{{ question.order }}</span>
+                        <span
+                            class="question-type-badge {% if question.question_type == 'MCQ' %}type-mcq{% else %}type-tf{% endif %}">
+                            {% if question.question_type == 'MCQ' %}
+                            📌 متعدد
+                            {% else %}
+                            🔲 صح/خطأ
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <div class="question-text">{{ question.text }}</div>
+
+                    {% if question.question_type == 'MCQ' %}
+                    <div class="question-options">
+                        <div class="option-item">
+                            <strong>أ:</strong> {{ question.option_a }}
+                            {% if question.correct_answer == 'A' %}<span class="correct-badge">✓</span>{% endif %}
+                        </div>
+                        <div class="option-item">
+                            <strong>ب:</strong> {{ question.option_b }}
+                            {% if question.correct_answer == 'B' %}<span class="correct-badge">✓</span>{% endif %}
+                        </div>
+                        <div class="option-item">
+                            <strong>ج:</strong> {{ question.option_c }}
+                            {% if question.correct_answer == 'C' %}<span class="correct-badge">✓</span>{% endif %}
+                        </div>
+                        <div class="option-item">
+                            <strong>د:</strong> {{ question.option_d }}
+                            {% if question.correct_answer == 'D' %}<span class="correct-badge">✓</span>{% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="question-answer">
+                        <strong>🎯 الإجابة الصحيحة:</strong>
+                        {% if question.correct_answer == 'True' %}
+                        <span class="answer-badge correct">✓ صحيح</span>
+                        {% else %}
+                        <span class="answer-badge incorrect">✗ خطأ</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Delete Button -->
+                    <form method="POST" class="delete-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="question_id" value="{{ question.id }}">
+                        <button type="submit" class="btn-delete"
+                            onclick="return confirm('هل أنتِ متأكدة من حذف هذا السؤال؟')">🗑️ حذف</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>📭 لا توجد أسئلة حتى الآن</p>
+                <p>ابدأي بإضافة سؤالك الأول! 💕</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="manager-navigation">
+        <a href="{% url 'home' %}" class="btn btn-secondary">← العودة للصفحة الرئيسية</a>
+        <a href="{% url 'quiz' %}" class="btn btn-primary">ابدأي الكويز →</a>
+        <a href="{% url 'manager_logout' %}" class="btn btn-logout">🚪 تسجيل الخروج</a>
+    </div>
+
+    <script>
+        function updateFormFields() {
+            const questionType = document.getElementById('question_type').value;
+            const mcqOptions = document.getElementById('mcq-options');
+            const tfOptions = document.getElementById('tf-options');
+
+            if (questionType === 'MCQ') {
+                mcqOptions.style.display = 'block';
+                tfOptions.style.display = 'none';
+                document.getElementById('option_a').required = true;
+                document.getElementById('option_b').required = true;
+                document.getElementById('option_c').required = true;
+                document.getElementById('option_d').required = true;
+            } else {
+                mcqOptions.style.display = 'none';
+                tfOptions.style.display = 'block';
+                document.getElementById('option_a').required = false;
+                document.getElementById('option_b').required = false;
+                document.getElementById('option_c').required = false;
+                document.getElementById('option_d').required = false;
+            }
+        }
+    </script>
+</div>
+
+{% endblock %}

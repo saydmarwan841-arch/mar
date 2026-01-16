@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}كويز الحب - الصفحة الرئيسية{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <div class="glass-card home-card">
+        <!-- Animated hearts -->
+        <div class="hearts-container">
+            <span class="heart">♥</span>
+            <span class="heart">♥</span>
+            <span class="heart">♥</span>
+        </div>
+
+        <h1 class="welcome-title">أهلاً وسهلاً يا {{ name }}</h1>
+        <p class="welcome-subtitle">أنا أحبك كثيراً ♥️</p>
+
+        <div class="decorative-divider"></div>
+
+        <p class="welcome-text">
+            هذا كويز خاص لك، مليء بالحب والمرح.<br>
+            هل أنتِ مستعدة لاختبار معلوماتك؟
+        </p>
+
+        <div class="features">
+            <div class="feature-item">
+                <span class="feature-icon">💫</span>
+                <span class="feature-text">أسئلة متنوعة</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">⏱️</span>
+                <span class="feature-text">لا وقت محدد</span>
+            </div>
+            <div class="feature-item">
+                <span class="feature-icon">🎁</span>
+                <span class="feature-text">مفاجأة في النهاية</span>
+            </div>
+        </div>
+
+        <a href="{% url 'quiz' %}" class="btn btn-primary">
+            ابدأي الكويز الآن
+            <span class="btn-arrow">→</span>
+        </a>
+
+        <p class="footer-text">من قلبي إلى قلبك ♥️</p>
+    </div>
+
+    <!-- Floating decorations -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+</div>
+{% endblock %}

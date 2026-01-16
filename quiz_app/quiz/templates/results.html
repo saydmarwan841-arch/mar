@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}كويز الحب - النتائج{% endblock %}
+
+{% block content %}
+<div class="results-container">
+    <div class="glass-card results-card">
+        <!-- Celebration animation -->
+        <div class="celebration">
+            <span class="confetti">🎉</span>
+            <span class="confetti">💝</span>
+            <span class="confetti">✨</span>
+            <span class="confetti">💕</span>
+            <span class="confetti">🎊</span>
+        </div>
+
+        <!-- Score Display -->
+        <div class="score-display">
+            <div class="score-circle">
+                <span class="score-value">{{ score }}</span>
+                <span class="score-total">/ {{ total }}</span>
+            </div>
+            <div class="percentage-display">
+                <span class="percentage-value">{{ percentage|floatformat:0 }}%</span>
+            </div>
+        </div>
+
+        <!-- Romantic Message -->
+        <h1 class="results-message">{{ message }}</h1>
+        <p class="results-message-en">{{ message_en }}</p>
+
+        <!-- Result Details -->
+        <div class="result-details">
+            {% if percentage == 100 %}
+            <p class="detail-text">أنتِ مثالية تماماً! ستبقين في قلبي إلى الأبد! 💕</p>
+            {% elif percentage >= 80 %}
+            <p class="detail-text">أنتِ ذكية وجميلة وتستحقين كل الحب! 💖</p>
+            {% elif percentage >= 60 %}
+            <p class="detail-text">أنتِ رائعة وأنا فخور بك جداً! 💗</p>
+            {% else %}
+            <p class="detail-text">المهم أنك معي، وأنتِ أهم اختبار نجحت فيه! 💞</p>
+            {% endif %}
+        </div>
+
+        <!-- Decorative divider -->
+        <div class="decorative-divider"></div>
+
+        <!-- Action Buttons -->
+        <div class="results-actions">
+            <a href="{% url 'quiz' %}" class="btn btn-primary">
+                خذي الكويز مرة أخرى
+                <span class="btn-arrow">→</span>
+            </a>
+            <a href="{% url 'home' %}" class="btn btn-secondary">
+                العودة للصفحة الرئيسية
+            </a>
+        </div>
+
+        <!-- Heart footer -->
+        <p class="heart-footer">♥️ مع كل حبي ♥️</p>
+    </div>
+
+    <!-- Animated background elements -->
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Celebration animation on page load
+    window.addEventListener('load', function () {
+        const confetti = document.querySelectorAll('.confetti');
+        confetti.forEach((item, index) => {
+            item.style.animation = `float ${3 + index * 0.5}s ease-in-out infinite`;
+            item.style.animationDelay = `${index * 0.2}s`;
+        });
+    });
+
+    // Counter animation for score
+    function animateScore() {
+        const scoreValue = document.querySelector('.score-value');
+        const targetScore = parseInt(scoreValue.textContent);
+        let currentScore = 0;
+        const increment = Math.ceil(targetScore / 50);
+
+        const counter = setInterval(() => {
+            currentScore += increment;
+            if (currentScore >= targetScore) {
+                scoreValue.textContent = targetScore;
+                clearInterval(counter);
+            } else {
+                scoreValue.textContent = currentScore;
+            }
+        }, 20);
+    }
+
+    window.addEventListener('load', animateScore);
+</script>
+{% endblock %}
